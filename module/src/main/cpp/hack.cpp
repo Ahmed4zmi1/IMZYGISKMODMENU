@@ -37,7 +37,13 @@ void *getAbsAddress(uintptr_t offset) {
 //here
 
 
-
+float (*old_noReload)(void *instance);
+float (noReload)(void *instance) {
+	if(instance!=NULL) {
+		return 0;
+	}
+	return old_noReload(instance);
+}
 
 
 
@@ -111,6 +117,7 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
       if (ImGui::BeginTabBar("telegram: @MyAlessa", ImGuiTabBarFlags_None)) {
     if (ImGui::BeginTabItem("Hack Menu"))
     {	
+	    ImGui::Checkbox("NoReload", &noReload);
 
 
 
@@ -163,6 +170,7 @@ void hack_start(const char *_game_data_dir) {
     LOGI("%s: %p - %p",TargetLibName, g_TargetModule.start_address, g_TargetModule.end_address);
 
     // TODO: hooking/patching here
+	A64HookFunction((void *)getRealOffset(0x89552A), (void *)noReload, (void **) &old_noReload);
 
 
 
